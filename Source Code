@@ -1,0 +1,62 @@
+# Cyber-Attack-Trends-by-Sectors 
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load dataset
+file_path = ("Cyber_Attack_Trends_Analysis.csv")
+df = pd.read_csv(file_path)
+
+# Basic info
+print(df.head())
+print("Dataset Shape:", df.shape) 
+
+# Clean column names
+df.columns = df.columns.str.strip()
+
+# Check unique values
+print("Industries:", df['Target Industry'].unique())
+print("Attack Types:", df['Attack Type'].unique())
+
+# Group data by industry and year
+sector_year = df.groupby(['Target Industry', 'Year']).size().reset_index(name='Count')
+
+# Set plot style
+sns.set(style="whitegrid")
+
+# Line Plot: Industry Trends
+plt.figure(figsize=(14,7))
+sns.lineplot(data=sector_year, x='Year', y='Count', hue='Target Industry', marker='o')
+plt.title("Cyber Attack Frequency by Industry Over Years")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# Heatmap: Industry vs Year
+pivot_sector_year = df.pivot_table(index='Target Industry', columns='Year', aggfunc='size', fill_value=0)
+plt.figure(figsize=(14,7))
+sns.heatmap(pivot_sector_year, annot=True, fmt="d", cmap="YlGnBu")
+plt.title("Heatmap of Cyber Attacks: Industry vs Year")
+plt.show()
+
+# Growth Heatmap
+pct_growth = pivot_sector_year.pct_change(axis=1).fillna(0) * 100
+
+plt.figure(figsize=(14,7))
+sns.heatmap(pct_growth, annot=True, fmt=".1f", cmap="coolwarm", center=0)
+plt.title("Year-over-Year % Growth of Attacks by Industry")
+plt.show()
+
+# Top 5 Attack Types Trend
+attack_year = df.groupby(['Year', 'Attack Type']).size().reset_index(name='Count')
+top_attacks = df['Attack Type'].value_counts().head(5).index
+
+attack_year_top = attack_year[attack_year['Attack Type'].isin(top_attacks)]
+
+plt.figure(figsize=(14,7))
+sns.lineplot(data=attack_year_top, x='Year', y='Count', hue='Attack Type', marker='o')
+plt.title("Top 5 Attack Types Trends Over Time")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
