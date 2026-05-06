@@ -1,6 +1,7 @@
 # Cyber-Attack-Trends-by-Sectors Analysis 
 # Dataset taken from Kaggle website
 
+# import libraries 
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
